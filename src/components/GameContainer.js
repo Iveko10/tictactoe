@@ -46,21 +46,23 @@ export class GameContainer extends Component {
             squares: Array(9).fill(null),
             playerMove: 0,              // 0 - X's turn, 1 - O's turn
             tmp_move : Array(9).fill(null),
-            board : board
+            //board : board
         }
+
+        let matchResult = "";
         
     }
 
     componentDidMount(){
         console.log( this.props.round + " mounted")
+        this.matchResult = "";
     }
 
     componentDidUpdate(){
-        console.log(this.props.round + " round");
+        //console.log(this.props.round + " round");
         board = Array.from(Array(9).keys());
         
-        this.runGame()
-        this.updateBoard()
+        //this.runGame()
 
     }
 
@@ -77,17 +79,33 @@ export class GameContainer extends Component {
         return false;
     }
 
-    updateBoard(){
+    updateBoard(playerValue){
         //console.log(cells)
         for (let i = 0; i < cells.length; i++) {
             cells[i].innerHTML = board[i];
         }
+
+        let plays = board.reduce((a, e, i) => {
+            return (e === playerValue) ? a.concat(i) : a;
+          }, []);
+          let gameWon = false;
+          for (let [index, win] of winningCombinations.entries()) {
+            if (win.every(elem => plays.indexOf(elem) > -1)) { 
+              gameWon = { 
+                index: index,
+                playerValue: playerValue
+              };
+              break;
+            }
+          }
+          return gameWon;
     }
+
 
     runGame(){
         let index = 0;
         let tmp_arr = Array.from(Array(9).keys());
-
+        let didWin = false;
         while(tmp_arr.length > 0){
             let position = tmp_arr[Math.floor(Math.random() * tmp_arr.length)];     //rand index/position
             //console.log(position);
@@ -95,45 +113,28 @@ export class GameContainer extends Component {
             board[position] = value;
 
             //checkIfWon
+            didWin = this.updateBoard(value)
+            if(didWin){
+                console.log("Player " + value + " won");
+                this.matchResult = "Player " + value + " won";
+                break;
+            } 
 
             index += 1;
             let id = tmp_arr.indexOf(position);
             tmp_arr.splice(id, 1);
         }
+        if(!didWin){
+            console.log("DRAW");
+            this.matchResult = "GAME ENDS WITH A DRAW";
+        }
         console.log("board is: " + board);
-
-        
-
-        // for (let index = 0; index < this.state.squares.length; index++) {
-        //     let move = Math.floor(Math.random() * 8) + 0;
-        //     //console.log("im here " + move)
-        //     const value = index % 2 === 0 ? "X" : "O";
-        //     t_squares[move] = value;
-        // }
-        // while (true){
-        //     let check = board.filter( item => typeof item === "number");
-        //     if (check.length == 0){
-        //         break;
-        //     }
-        //     let move = Math.floor(Math.random() * 8) + 0;
-        //     if(index > 0){
-        //         while(typeof board[move] === "string"){
-        //             move = Math.floor(Math.random() * 8) + 0;
-        //             if(typeof board[move] === "number"){
-        //                 break;
-        //             }
-        //         }
-        //     }
-        //     console.log("im here " + move)
-        //     const value = index % 2 === 0 ? "X" : "O";
-        //     index +=1;
-        //     board[move] = value;
-            
-                
-        // }
+       
     }
 
     render() {
+        console.log(this.props.round + " round");
+        this.runGame();
 
         return (
             <div>
@@ -158,8 +159,9 @@ export class GameContainer extends Component {
                         </tr>    
                     </table> 
                     <p> Strategy used: {playerStrategy[this.props.playerStrategy]}</p> 
-                    <p>move: {this.state.tmp_move}</p> 
-                    <p>array: {this.state.board}</p> 
+                    <p>move: {this.state.tmp_move}</p>
+                    <h2>{this.matchResult}</h2> 
+                    
                 </div> 
             </div>
         )

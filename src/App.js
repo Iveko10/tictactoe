@@ -20,11 +20,7 @@ class App extends React.Component {
       }))
     }, 2000)
 
-    if (this.state.initValue >= 10) {
-      //let mountNode = React.findDOMNode(this.refs.game);
-      //let unmount = React.unmountComponentAtNode(mountNode);
-      //unmount.App;
-    }
+    
 
   }
   
