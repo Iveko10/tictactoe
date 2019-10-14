@@ -46,24 +46,19 @@ export class GameContainer extends Component {
             squares: Array(9).fill(null),
             playerMove: 0,              // 0 - X's turn, 1 - O's turn
             tmp_move : Array(9).fill(null),
-            //board : board
+            message: "Board Created, The game will start with player X"
         }
-
-        let matchResult = "";
         
     }
 
     componentDidMount(){
         console.log( this.props.round + " mounted")
-        this.matchResult = "";
+        this.matchResult = "Board Created, The game will start with player X";
     }
 
     componentDidUpdate(){
         //console.log(this.props.round + " round");
         board = Array.from(Array(9).keys());
-        
-        //this.runGame()
-
     }
 
     getPlayer(){
@@ -101,6 +96,18 @@ export class GameContainer extends Component {
           return gameWon;
     }
 
+    clearUnusedSquares(){
+        for (let i = 0; i < board.length; i++) {
+            if(typeof board[i] === "number"){
+                board[i] = "";
+            }
+            for (let i = 0; i < cells.length; i++) {
+                cells[i].innerHTML = board[i];
+            }
+        }
+
+       
+    }
 
     runGame(){
         let index = 0;
@@ -116,7 +123,9 @@ export class GameContainer extends Component {
             didWin = this.updateBoard(value)
             if(didWin){
                 console.log("Player " + value + " won");
-                this.matchResult = "Player " + value + " won";
+                this.matchResult = "PLAYER " + value + " WON";
+                //clear the board
+                this.clearUnusedSquares()
                 break;
             } 
 
@@ -158,9 +167,10 @@ export class GameContainer extends Component {
                             <td className="cell" id="8"></td>
                         </tr>    
                     </table> 
-                    <p> Strategy used: {playerStrategy[this.props.playerStrategy]}</p> 
-                    <p>move: {this.state.tmp_move}</p>
-                    <h2>{this.matchResult}</h2> 
+                    <h2>{
+                        this.props.round === 0 ? this.state.message : this.matchResult
+                        }
+                    </h2> 
                     
                 </div> 
             </div>
@@ -174,6 +184,9 @@ const styles = {
         minHeight: 600 + "px",
         width: 100+"%",
     },
+    strong: {
+        fontWeight: 800,
+    }
     
 }
 
